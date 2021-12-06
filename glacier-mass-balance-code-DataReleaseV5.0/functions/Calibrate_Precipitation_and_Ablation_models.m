@@ -562,6 +562,9 @@ all_ice_ablation_data=[];
                         if Glaciological_data.ba(site_index_for_previous_year)< 0 
                             [~,~,~,previous_year_stratigraphic_mass_minimum_date] = Find_Mass_Maximum_and_Minimum_Adjustments(Glaciological_data(site_index_for_previous_year,:),Weather_data,lapse_rate,ks,ki,precipitation_ratios_table,glacier,AAD,time_system,integration_method,integration_surface,plot_ablation_model);
                             precipitation_ratio=precipitation_ratio_table.precipitation_ratios(strcmp(precipitation_ratio_table.site_name,insitu_data.site_name(site)));
+                            if isempty(precipitation_ratio)
+                                precipitation_ratio=precipitation_ratio_table.precipitation_ratios(strcmp(precipitation_ratio_table.site_name,'All_sites'));
+                            end
                             [Site_Weather]=Model_Site_Weather(Weather_data,insitu_data.elevation(site),Glaciological_data.fall_date(site_index_for_previous_year),previous_year_stratigraphic_mass_minimum_date,glacier,lapse_rate,precipitation_ratio);
                             if (sum(Site_Weather.T_flag)/height(Site_Weather))<.5 && (sum(Site_Weather.P_flag)/height(Site_Weather))<.5
                             accumulation=0;

@@ -268,6 +268,7 @@ else
         bin_weights(:,1)=(glacier_hypsometry(1:end)./sum(glacier_hypsometry(1:end)));
         if ~isnan(point_balances.ba)
             % get annual gradient and balance
+
             pp=splinefit(point_balances.elevation,point_balances.ba,2,2);
             while length(pp.coefs(:,1))>1 && pp.coefs(2,1)<0
                 breaks=[min(point_balances.elevation) point_balances.elevation(find(point_balances.elevation<pp.breaks(2),1,'last')) max(point_balances.elevation)];
@@ -287,7 +288,7 @@ else
             Ba=sum(integrated_ba);
             Ba_Date=round(nansum(bin_weights.*predict(fitlm(point_balances.elevation,datenum(point_balances.mass_minimum_date)),bin_centers')));
             ELA=interp1(annual_balance_profile_values,bin_centers,0, 'linear','extrap');
-            bals=point_balances
+            bals=point_balances;
             point_balances=point_balances(~strcmp(point_balances.site_name,'bp'),:);
         else
             ba_gradient=nan;

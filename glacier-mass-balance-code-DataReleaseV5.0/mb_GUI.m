@@ -149,6 +149,37 @@ record_years=unique(Glaciological_data.Year);%years of glaciological record
 years=[num2str(record_years(1)),':',num2str(record_years(end))];%years selected by user
 
 set(handles.YEAR_EDIT,'String',years)
+if strcmp(glacier,'Taku')||strcmp(glacier,'LemonCreek')
+    %set lapse rate to best optimized value based on McNeil et al., 2020
+    set(handles.Lapse_Rate_Selection,'Value',4)%list lapse rates available for user to select
+    %include transient snowline observations due to missing ablation zone
+    %data 
+    set(handles.incorporate_TSLs,'Value',1)%incorporate TSLs
+    %include previous glacier-wide solutions to address the lack of
+    %complete archive glaciological data
+    set(handles.Include_Previous_Glacierwide_Solutions,'Value',1)%incorporate previous glacier-wide solutions
+    set(handles.nan_incomplete_glaciological_data,'Value',0)%Nan incomplete glaciologcial data, use the correlation between stake and glacier-wide to resolve Ba
+elseif strcmp(glacier,'Mendenhall')
+    %set lapse rate to best optimized value based on McNeil et al., 2020
+    set(handles.Lapse_Rate_Selection,'Value',4)%list lapse rates available for user to select
+    %include transient snowline observations due to missing ablation zone
+    %data 
+    set(handles.incorporate_TSLs,'Value',1)%incorporate TSLs
+    set(handles.Include_Previous_Glacierwide_Solutions,'Value',0)%incorporate previous glacier-wide solutions
+    set(handles.nan_incomplete_glaciological_data,'Value',0)%Nan incomplete glaciologcial data, use the correlation between stake and glacier-wide to resolve Ba
+elseif strcmp(glacier,'SouthCascade')
+    set(handles.incorporate_TSLs,'Value',0)%incorporate TSLs
+    set(handles.Include_Previous_Glacierwide_Solutions,'Value',1)%incorporate previous glacier-wide solutions
+    set(handles.nan_incomplete_glaciological_data,'Value',1)%Nan incomplete glaciologcial data, use the correlation between stake and glacier-wide to resolve Ba
+    set(handles.Lapse_Rate_Selection,'Value',7)%list lapse rates available for user to select
+    
+else 
+
+    set(handles.incorporate_TSLs,'Value',0)%incorporate TSLs
+    set(handles.Include_Previous_Glacierwide_Solutions,'Value',1)%incorporate previous glacier-wide solutions
+    set(handles.nan_incomplete_glaciological_data,'Value',1)%Nan incomplete glaciologcial data, use the correlation between stake and glacier-wide to resolve Ba
+    set(handles.Lapse_Rate_Selection,'Value',7)%list lapse rates available for user to select
+end
 handles.my_yr = years;
 all_sites=unique(Glaciological_data.site_name);%get list of sites from glaciological data
 if length(all_sites)>36
@@ -626,6 +657,40 @@ if get(handles.PLOTABLATIONMODEL,'Value')==1
 else
         plot_ablation_model=0;
 end
+
+Geodetic_Calibration_index=get(handles.Geodetic_Calibration_Selection,'Value');
+if Geodetic_Calibration_index~=0 %if calibration is applied we need to make sure we have continuous glaciological data 
+    record_years=unique(Glaciological_data.Year(~contains(Glaciological_data.site_name,'TSL_')));
+    a=diff(record_years);
+    a=[a;1];
+    %%
+    b=[];
+    start=[];
+    nd=[];
+    for i=1:length(a)-1
+        if (a(i)==1) && (isempty(start)) && (a(i+1)==1)
+            start=i;
+        elseif (a(i)==1) && (~isempty(start)) && (a(i+1)~=1)
+            nd=i;
+        elseif (~isempty(start)) && (i==length(a)-1) && (a(i+1)==1)
+            nd=i+1;
+        end
+        if (~isempty(start)) && (~isempty(nd))
+            b=[b;[start nd]];
+            start=[];
+            nd=[];
+        end
+    end
+    period_length=b(:,2)-b(:,1);
+    [v,index] = max(period_length);
+    continuous_record=record_years(b(index,1):b(index,2));
+    if length(continuous_record)~=length(years)
+        disp(['%%%%%%%%%% Glaciological data from ',glacier,' contains data gaps %%%%%%%%%%%'])
+        disp(['%%%%%% Using the longest continous portion of record to perform geodetic calibration %%%%%%%'])
+        disp(['%%% Select None for geodetic calibration to reprocess all years %%%'])
+        years=continuous_record;
+    end
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Include Previous Glacierwide Solutions?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -673,8 +738,9 @@ elseif time_system==3
 elseif time_system==4
     time_system_string='Fixed_Date_Stratigraphic';
 end
+
 nan_incomplete_glaciological_data=get(handles.nan_incomplete_glaciological_data,'Value');
-Geodetic_Calibration_index=get(handles.Geodetic_Calibration_Selection,'Value');    
+    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   D) Calculated Glacier-wide Mass balance
