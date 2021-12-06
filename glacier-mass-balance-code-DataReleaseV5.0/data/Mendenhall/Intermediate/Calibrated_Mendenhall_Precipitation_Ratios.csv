@@ -1,0 +1,4 @@
+site_name,elevation,precipitation_ratios,rsquared,RMSE
+CLFG,680.65,1.755993281,NaN,NaN
+LSB,994.1052632,1.755993281,NaN,0
+All_sites,NaN,1.755993281,NaN,0

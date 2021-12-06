@@ -1,0 +1,935 @@
+---
+title: "BenchmarkGlacTrendScript_v1"
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = '~/Desktop/SperryWx/SperryReanalysis/Trend/CalibratedSols')
+```
+
+
+```{r include=FALSE}
+######################################Benchmark Glacier Trend Analysis######################################
+library(chron)
+library(zoo)
+library(lubridate)
+library(pastecs)
+library(ggplot2)
+library(gghighlight)
+library(ggthemes)
+library(tidyr)
+library(plotrix)
+library(reshape)
+library(ggpubr)
+library(plyr)
+library(dplyr)
+library(mice)
+library(Kendall)
+library(trend)
+library(reshape2)
+library(lmtest)
+library(car)
+library(outliers)
+library(gvlma)
+library(modifiedmk)
+library(gitlabr)
+library(RCurl)
+library(astsa)
+library(TSA)
+library(gitgadget)
+library(usethis)
+library(tseries)
+library(gdata)
+library(grid)
+library(gridExtra)
+library(extrafont)
+library(LaplacesDemon)
+library(robustbase)
+library(robust)
+library(pracma)
+library(egg)
+library(lemon)
+library(patternplot)
+loadfonts(device="pdf",quiet = T)
+```
+
+
+
+```{r include=FALSE}
+setwd("~/Desktop/SperryWx/SperryReanalysis/Trend/CalibratedSols")
+files = list.files(pattern="*.csv")
+allData <- lapply(files, function(.file){
+  
+  dat<-read.csv(.file, header=T)
+  dat$id<-as.character(.file)
+  
+  dat    # return the dataframe
+})
+# combine into a single dataframe
+D1 <- do.call(rbind.fill, allData)
+D1$id <- sub("_Glacier.*", "", D1$id)
+
+#keep pertinent columns
+D2 <- D1[,c(1:4,17)]
+
+#remove 2018
+D2 <- D2[!D2$Year == "2018",]
+
+Gulk1 <- subset(D2, D2$id == "Gulkana")
+Wolv1 <- subset(D2, D2$id == "Wolverine")
+SC1 <- subset(D2, D2$id == "South_Cascade")
+Sper1 <- subset(D2, D2$id == "Sperry")
+LC1 <- subset(D2, D2$id == "Lemon_Creek")
+
+```
+#Raw Annual and Seasonal Plots
+
+```{r echo=FALSE, warning=FALSE,fig.width=8.5}
+#Gulkana raw plot
+cols2=c("Ba"="#999999","Bw"="#E69F00","Bs"="#56B4E9")
+gulk.plot1 <- ggplot(Gulk1)+
+  geom_line(aes(x=Year,y=Ba_mwe,colour="Ba"),size=1)+
+  geom_line(aes(x=Year,y=Bw_mwe,colour="Bw"),size=1)+
+  geom_line(aes(x=Year,y=Bs_mwe,colour="Bs"),size=1)+
+  geom_smooth(aes(x=Year,y=Bw_mwe),method = 'lm')+
+  geom_smooth(aes(x=Year,y=Bs_mwe),method = 'lm')+
+  geom_smooth(aes(x=Year,y=Ba_mwe), method="lm")+
+  xlab("Year")+
+  ylab("m w.e.")+
+  scale_x_continuous(breaks = seq(1965,2018,5))+
+  theme_bw()+
+  theme(legend.title=element_blank())+
+  theme(legend.text = element_text(size=18))+
+  theme(legend.position = "right")+
+  labs(title="Gulkana")+
+  theme(text=element_text(size=18),
+        panel.grid.major.y = element_blank(), 
+        panel.grid.major.x = element_line(colour="grey", linetype="dashed"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position = "top")+
+  theme(axis.text.x = element_text(color="black", 
+                                   size=12),
+        axis.text.y = element_text(color="black", 
+                                   size=18))+
+  scale_color_manual(values=cols2,breaks=c("Ba","Bw","Bs"),labels=c(expression(B[a]),expression(B[w]),expression(B[s])))
+gulk.plot1
+
+#Wolverine raw plot
+wolv.plot1 <- ggplot(Wolv1)+
+  geom_line(aes(x=Year,y=Ba_mwe,colour="Ba"),size=1)+
+  geom_line(aes(x=Year,y=Bw_mwe,colour="Bw"),size=1)+
+  geom_line(aes(x=Year,y=Bs_mwe,colour="Bs"),size=1)+
+  geom_smooth(aes(x=Year,y=Bw_mwe))+
+  geom_smooth(aes(x=Year,y=Bs_mwe))+
+  geom_smooth(aes(x=Year,y=Ba_mwe))+
+  xlab("Year")+
+  ylab("m w.e.")+
+  scale_x_continuous(breaks = seq(1965,2018,5))+
+  theme_bw()+
+  theme(legend.title=element_blank())+
+  theme(legend.text = element_text(size=18))+
+  theme(legend.position = "right")+
+  labs(title="Wolverine")+
+  theme(text=element_text(size=18),
+        panel.grid.major.y = element_blank(), 
+        panel.grid.major.x = element_line(colour="grey", linetype="dashed"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position = "top")+
+  theme(axis.text.x = element_text(color="black", 
+                                   size=12),
+        axis.text.y = element_text(color="black", 
+                                   size=18))+
+  scale_color_manual(values=cols2,breaks=c("Ba","Bw","Bs"),labels=c(expression(B[a]),expression(B[w]),expression(B[s])))
+wolv.plot1
+
+#SC raw plot
+sc.plot1 <- ggplot(SC1)+
+  geom_line(aes(x=Year,y=Ba_mwe,colour="Ba"),size=1)+
+  geom_line(aes(x=Year,y=Bw_mwe,colour="Bw"),size=1)+
+  geom_line(aes(x=Year,y=Bs_mwe,colour="Bs"),size=1)+
+  geom_smooth(aes(x=Year,y=Bw_mwe),method = 'lm')+
+  geom_smooth(aes(x=Year,y=Bs_mwe),method = "loess")+
+  geom_smooth(aes(x=Year,y=Ba_mwe), method="lm")+
+  xlab("Year")+
+  ylab("m w.e.")+
+  scale_x_continuous(breaks = seq(1960,2018,5))+
+  theme_bw()+
+  theme(legend.title=element_blank())+
+  theme(legend.text = element_text(size=18))+
+  theme(legend.position = "right")+
+  labs(title="South Cascade")+
+  theme(text=element_text(size=18),
+        panel.grid.major.y = element_blank(), 
+        panel.grid.major.x = element_line(colour="grey", linetype="dashed"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position = "top")+
+  theme(axis.text.x = element_text(color="black", 
+                                   size=12),
+        axis.text.y = element_text(color="black", 
+                                   size=18))+
+  scale_color_manual(values=cols2,breaks=c("Ba","Bw","Bs"),labels=c(expression(B[a]),expression(B[w]),expression(B[s])))
+sc.plot1
+
+#Sperry raw plot
+sper.plot1 <- ggplot(Sper1)+
+  geom_line(aes(x=Year,y=Ba_mwe,colour="Ba"),size=1)+
+  geom_line(aes(x=Year,y=Bw_mwe,colour="Bw"),size=1)+
+  geom_line(aes(x=Year,y=Bs_mwe,colour="Bs"),size=1)+
+  geom_smooth(aes(x=Year,y=Bw_mwe),method = 'lm')+
+  geom_smooth(aes(x=Year,y=Bs_mwe),method = 'lm')+
+  geom_smooth(aes(x=Year,y=Ba_mwe), method="lm")+
+  xlab("Year")+
+  ylab("m w.e.")+
+  scale_x_continuous(breaks = seq(1965,2018,5))+
+  theme_bw()+
+  theme(legend.title=element_blank())+
+  theme(legend.text = element_text(size=18))+
+  theme(legend.position = "right")+
+  labs(title="Sperry")+
+  theme(text=element_text(size=18),
+        panel.grid.major.y = element_blank(), 
+        panel.grid.major.x = element_line(colour="grey", linetype="dashed"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position = "top")+
+  theme(axis.text.x = element_text(color="black", 
+                                   size=12),
+        axis.text.y = element_text(color="black", 
+                                   size=18))+
+  scale_color_manual(values=cols2,breaks=c("Ba","Bw","Bs"),labels=c(expression(B[a]),expression(B[w]),expression(B[s])))
+sper.plot1
+
+#Lemon Creek raw plot
+lc.plot1 <- ggplot(LC1)+
+  geom_line(aes(x=Year,y=Ba_mwe,colour="Ba"),size=1)+
+  geom_line(aes(x=Year,y=Bw_mwe,colour="Bw"),size=1)+
+  geom_line(aes(x=Year,y=Bs_mwe,colour="Bs"),size=1)+
+  geom_smooth(aes(x=Year,y=Bw_mwe),method = "lm")+
+  geom_smooth(aes(x=Year,y=Bs_mwe),method = 'lm')+
+  geom_smooth(aes(x=Year,y=Ba_mwe),method = 'loess')+
+  xlab("Year")+
+  ylab("m w.e.")+
+  scale_x_continuous(breaks = seq(1950,2018,5))+
+  theme_bw()+
+  theme(legend.title=element_blank())+
+  theme(legend.text = element_text(size=18))+
+  theme(legend.position = "right")+
+  labs(title="Lemon Creek")+
+  theme(text=element_text(size=18),
+        panel.grid.major.y = element_blank(), 
+        panel.grid.major.x = element_line(colour="grey", linetype="dashed"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position = "top")+
+  theme(axis.text.x = element_text(color="black", 
+                                   size=12),
+        axis.text.y = element_text(color="black", 
+                                   size=18))+
+  scale_color_manual(values=cols2,breaks=c("Ba","Bw","Bs"),labels=c(expression(B[a]),expression(B[w]),expression(B[s])))
+lc.plot1
+
+```
+\newpage
+#Trend using Mann Kendall
+##using Mann-Kendall the following exhibit trends:
+
+##Wolverine annual balance: tau = -0.26, 2-sided pvalue =0.0063099
+##Lemon Creek annual balance: tau = -0.426, 2-sided pvalue =4.4747e-07
+##Wolverine summer balance: tau = -0.38, 2-sided pvalue =6.2097e-05
+##South Cascade summer balance: tau = -0.294, 2-sided pvalue =0.00095174
+##Lemon Creek summer balance: tau = -0.381, 2-sided pvalue =0.017053
+```{r}
+#detrend series
+#annual
+GGBaDetr <- detrend(Gulk1$Ba_mwe,tt='constant')
+WGBaDetr <- detrend(Wolv1$Ba_mwe,tt='constant')
+LCBaDetr <- detrend(LC1$Ba_mwe,tt='constant')
+SCGBaDetr <- detrend(SC1$Ba_mwe,tt='constant')
+SGBaDetr <- detrend(Sper1$Ba_mwe,tt='constant')
+
+#winter
+GGBwDetr <- detrend(Gulk1$Bw_mwe,tt='constant')
+WGBwDetr <- detrend(Wolv1$Bw_mwe,tt='constant')
+LCBwDetr <- detrend(LC1$Bw_mwe,tt='constant')
+SCGBwDetr <- detrend(SC1$Bw_mwe,tt='constant')
+SGBwDetr <- detrend(Sper1$Bw_mwe,tt='constant')
+
+#summer
+GGBsDetr <- detrend(Gulk1$Bs_mwe,tt='constant')
+WGBsDetr <- detrend(Wolv1$Bs_mwe,tt='constant')
+LCBsDetr <- detrend(LC1$Bs_mwe,tt='constant')
+SCGBsDetr <- detrend(SC1$Bs_mwe,tt='constant')
+SGBsDetr <- detrend(Sper1$Bs_mwe,tt='constant')
+
+#Mann-Kendall on detrended series
+#annual
+MannKendall(GGBaDetr)
+MannKendall(WGBaDetr)
+MannKendall(LCBaDetr)
+MannKendall(SCGBaDetr)
+MannKendall(SGBaDetr)
+
+#winter
+MannKendall(GGBwDetr)
+MannKendall(WGBwDetr)
+MannKendall(SCGBwDetr)
+MannKendall(SGBwDetr)
+
+#summer
+MannKendall(GGBsDetr)
+MannKendall(WGBsDetr)
+MannKendall(SCGBsDetr)
+MannKendall(SGBsDetr)
+
+
+#Mann-Kendall on original series (not detrended)
+#annual
+MannKendall(Gulk1$Ba_mwe)
+MannKendall(Wolv1$Ba_mwe)
+MannKendall(SC1$Ba_mwe)
+MannKendall(Sper1$Ba_mwe)
+MannKendall(LC1$Ba_mwe)
+
+#winter
+MannKendall(Gulk1$Bw_mwe)
+MannKendall(Wolv1$Bw_mwe)
+MannKendall(SC1$Bw_mwe)
+MannKendall(Sper1$Bw_mwe)
+MannKendall(LC1$Bw_mwe)
+
+#summer
+MannKendall(Gulk1$Bs_mwe)
+MannKendall(Wolv1$Bs_mwe)
+MannKendall(SC1$Bs_mwe)
+MannKendall(Sper1$Bs_mwe)
+MannKendall(LC1$Bs_mwe)
+
+#amplitude
+MannKendall(GG.bamp$amp)
+MannKendall(WG.bamp$amp)
+MannKendall(SC.bamp$amp)
+MannKendall(SG.bamp$amp)
+
+```
+
+```{r include=FALSE}
+##################################
+#LM for balance
+#Gulk
+Gulk1.ba.lm <- lmrob(Gulk1$Ba_mwe ~ Gulk1$Year)
+Gulk1.bw.lm <- lmrob(Gulk1$Bw_mwe ~ Gulk1$Year)
+Gulk1.bs.lm <- lmRob(Gulk1$Bs_mwe ~ Gulk1$Year) #used different package/function so iterations wouldn't reach limit as it does in lmrob
+
+Gulk1.bamp <- Gulk1.bw.lm$residuals + abs(Gulk1.bs.lm$residuals)
+Gulk1.bamp.lm <- lmrob(Gulk1.bamp ~ Gulk1$Year)
+
+#Wolv
+Wolv1.ba.lm <- lmrob(Wolv1$Ba_mwe ~ Wolv1$Year)
+Wolv1.bw.lm <- lmrob(Wolv1$Bw_mwe ~ Wolv1$Year)
+Wolv1.bs.lm <- lmrob(Wolv1$Bs_mwe ~ Wolv1$Year)
+
+Wolv1.bamp <- Wolv1.bw.lm$residuals + abs(Wolv1.bs.lm$residuals)
+Wolv1.bamp.lm <- lmrob(Wolv1.bamp ~ Wolv1$Year)
+
+#SC
+SC1.ba.lm <- lmrob(SC1$Ba_mwe ~ SC1$Year)
+SC1.bw.lm <- lmrob(SC1$Bw_mwe ~ SC1$Year)
+SC1.bs.lm <- lmrob(SC1$Bs_mwe ~ SC1$Year)
+
+SC1.bamp <- SC1.bw.lm$residuals + abs(SC1.bs.lm$residuals)
+SC1.bamp.lm <- lmrob(SC1.bamp ~ SC1$Year)
+
+#Sperry
+Sper1.ba.lm <- lmrob(Sper1$Ba_mwe ~ Sper1$Year)
+Sper1.bw.lm <- lmrob(Sper1$Bw_mwe ~ Sper1$Year)
+Sper1.bs.lm <- lmrob(Sper1$Bs_mwe ~ Sper1$Year)
+
+Sper1.bamp <- Sper1.bw.lm$residuals + abs(Sper1.bs.lm$residuals)
+Sper1.bamp.lm <- lmrob(Sper1.bamp ~ Sper1$Year)
+
+#LC
+LC1.ba.lm <- lmrob(LC1$Ba_mwe ~ LC1$Year)
+LC1.bw.lm <- lmrob(LC1$Bw_mwe ~ LC1$Year)
+LC1.bs.lm <- lmrob(LC1$Bs_mwe ~ LC1$Year)
+
+```
+\newpage
+#Global Test of Model Assumptions (linear)
+##Result below show the following do not meet assumptions for linear model:
+##Format = Glacier, balance, linear assumption, p-value (level of sig. 0.05)
+
+##Gulkana, winter balance, skewness, 0.03575
+##Wolverine, winter balance, non-linear relationship, <0.0001
+##Wolverine, winter balance, skewness, <0.0001
+##Wolverine, winter balance, kurtosis, <0.0001
+##South Cascade, summer balance, heteroscedasticity, 0.02882
+##Lemon Creek, annual balance, non-linear relationship, 0.01164
+##Lemon Creek, annual balance, heteroscedasticity, 0.02814
+##Lemon Creek, winter balance, non-linear relationship, 0.001933
+##Lemon Creek, winter balance, skewness, 0.013766
+##Lemon Creek, winter balance, kurtosis, 0.002296
+
+```{r, fig.width=8.5,fig.height=10}
+# Global test of model assumptions
+#Gulk
+gvmodel.ba.gulk <- gvlma(Gulk1.ba.lm) 
+summary(gvmodel.ba.gulk)
+plot.gvlma(gvmodel.ba.gulk)
+gvmodel.bw.gulk <- gvlma(Gulk1.bw.lm) 
+summary(gvmodel.bw.gulk)
+plot.gvlma(gvmodel.bw.gulk)
+gvmodel.bs.gulk <- gvlma(Gulk1.bs.lm) 
+summary(gvmodel.bs.gulk)
+plot.gvlma(gvmodel.bs.gulk)
+#Wolv
+gvmodel.ba.wolv <- gvlma(Wolv1.ba.lm) 
+summary(gvmodel.ba.wolv)
+plot.gvlma(gvmodel.ba.wolv)
+gvmodel.bw.wolv <- gvlma(Wolv1.bw.lm) 
+summary(gvmodel.bw.wolv)
+plot.gvlma(gvmodel.bw.wolv)
+gvmodel.bs.wolv <- gvlma(Wolv1.bs.lm) 
+summary(gvmodel.bs.wolv)
+plot.gvlma(gvmodel.bs.wolv)
+#SC
+gvmodel.ba.sc <- gvlma(SC1.ba.lm) 
+summary(gvmodel.ba.sc)
+plot.gvlma(gvmodel.ba.sc)
+gvmodel.bw.sc <- gvlma(SC1.bw.lm) 
+summary(gvmodel.bw.sc)
+plot.gvlma(gvmodel.bw.sc)
+gvmodel.bs.sc <- gvlma(SC1.bs.lm) 
+summary(gvmodel.bs.sc)
+plot.gvlma(gvmodel.bs.sc)
+#Sperry
+gvmodel.ba.sper <- gvlma(Sper1.ba.lm) 
+summary(gvmodel.ba.sper)
+plot.gvlma(gvmodel.ba.sper)
+gvmodel.bw.sper <- gvlma(Sper1.bw.lm) 
+summary(gvmodel.bw.sper)
+plot.gvlma(gvmodel.bw.sper)
+gvmodel.bs.sper <- gvlma(Sper1.bs.lm) 
+summary(gvmodel.bs.sper)
+plot.gvlma(gvmodel.bs.sper)
+#LC
+gvmodel.ba.LC <- gvlma(LC1.ba.lm) 
+summary(gvmodel.ba.LC)
+plot.gvlma(gvmodel.ba.LC)
+gvmodel.bw.LC <- gvlma(LC1.bw.lm) 
+summary(gvmodel.bw.LC)
+plot.gvlma(gvmodel.bw.LC)
+gvmodel.bs.LC <- gvlma(LC1.bs.lm) 
+summary(gvmodel.bs.LC)
+plot.gvlma(gvmodel.bs.LC)
+
+#for those balance time series that exhibit trends, but don't meet linear trend assumptions (only two), let's try....
+#LC annual
+#fit loess (based on plot above)
+LC1.ba.loess <- loess(LC1$Ba_mwe ~ LC1$Year)
+#fit 1st order diff model (based on residuals below indicating a 1st order difference correlation)
+LC1.diff <- diff(LC1$Ba_mwe)
+plot(LC1.diff)
+LC1.diff <- as.data.frame(LC1.diff)
+
+#SC summer
+#fit loess (based on plot above)
+SC1.bs.loess <- loess(SC1$Bs_mwe ~ SC1$Year)
+
+#fit into one df
+LC1.df <- cbind(LC1$Year,LC1.ba.lm$residuals,LC1.ba.loess$residuals)
+LC1.df <- as.data.frame(LC1.df)
+colnames(LC1.df) <- c("Year","lm.resid","loess.resid")
+ggplot()+
+  geom_line(data=LC1.df,aes(y=lm.resid,x=Year),color="red",size=2)+
+  geom_line(data=LC1.df,aes(y=loess.resid,x=Year),color="blue")
+```
+
+\newpage
+#Testing residuals for normality for each glacier annual and seasonal balances
+```{r}
+#test for normality of residuals
+#Ba
+jarque.bera.test(Gulk1.ba.lm$residuals)
+jarque.bera.test(Wolv1.ba.lm$residuals)
+jarque.bera.test(SC1.ba.lm$residuals)
+jarque.bera.test(Sper1.ba.lm$residuals)
+jarque.bera.test(LC1.ba.lm$residuals)
+jarque.bera.test(LC1.ba.loess$residuals)
+hist(LC1.ba.loess$residuals)
+hist(LC1.diff)
+#bw
+jarque.bera.test(Gulk1.bw.lm$residuals)
+jarque.bera.test(Wolv1.bw.lm$residuals)
+jarque.bera.test(SC1.bw.lm$residuals)
+jarque.bera.test(Sper1.bw.lm$residuals)
+jarque.bera.test(LC1.bw.lm$residuals)
+#bs
+jarque.bera.test(Gulk1.bs.lm$residuals)
+jarque.bera.test(Wolv1.bs.lm$residuals)
+jarque.bera.test(SC1.bs.lm$residuals)
+jarque.bera.test(Sper1.bs.lm$residuals)
+jarque.bera.test(LC1.bs.lm$residuals)
+jarque.bera.test(SC1.bs.loess$residuals)
+
+```
+
+\newpage
+#Check for persistence/serial correlation of residuals
+
+```{r, fig.width=8.5,fig.height=10}
+#check for serial correlation
+#Gulk
+acf(Gulk1.ba.lm$residuals)
+acf(Gulk1.bw.lm$residuals)
+acf(Gulk1.bs.lm$residuals)
+lag1.plot(Gulk1.ba.lm$residuals,max.lag = 10,corr = TRUE,smooth = TRUE)
+lag1.plot(Gulk1.bw.lm$residuals,max.lag = 10,corr = TRUE,smooth = TRUE)
+lag1.plot(Gulk1.bs.lm$residuals,max.lag = 10,corr = TRUE,smooth = TRUE)
+#Wolv
+acf(Wolv1.ba.lm$residuals)
+acf(Wolv1.bw.lm$residuals)
+acf(Wolv1.bs.lm$residuals)
+lag1.plot(Wolv1.ba.lm$residuals,max.lag = 10,corr = TRUE,smooth = TRUE)
+lag1.plot(Wolv1.bw.lm$residuals,max.lag = 10,corr = TRUE,smooth = TRUE)
+lag1.plot(Wolv1.bs.lm$residuals,max.lag = 10,corr = TRUE,smooth = TRUE)
+#SC
+acf(SC1.ba.lm$residuals)
+acf(SC1.bw.lm$residuals)
+acf(SC1.bs.lm$residuals)
+lag1.plot(SC1.ba.lm$residuals,max.lag = 10,corr = TRUE,smooth = TRUE)
+lag1.plot(SC1.bw.lm$residuals,max.lag = 10,corr = TRUE,smooth = TRUE)
+lag1.plot(SC1.bs.lm$residuals,max.lag = 10,corr = TRUE,smooth = TRUE)
+#Sper
+acf(Sper1.ba.lm$residuals)
+acf(Sper1.bw.lm$residuals)
+acf(Sper1.bs.lm$residuals)
+lag1.plot(Sper1.ba.lm$residuals,max.lag = 10,corr = TRUE,smooth = TRUE)
+lag1.plot(Sper1.bw.lm$residuals,max.lag = 10,corr = TRUE,smooth = TRUE)
+lag1.plot(Sper1.bs.lm$residuals,max.lag = 10,corr = TRUE,smooth = TRUE)
+#LC
+acf(LC1.ba.lm$residuals)
+acf(LC1.bw.lm$residuals)
+acf(LC1.bs.lm$residuals)
+lag1.plot(LC1.ba.lm$residuals,max.lag = 10,corr = TRUE,smooth = TRUE)
+lag1.plot(LC1.bw.lm$residuals,max.lag = 10,corr = TRUE,smooth = TRUE)
+lag1.plot(LC1.bs.lm$residuals,max.lag = 10,corr = TRUE,smooth = TRUE)
+lag1.plot(LC1.diff,max.lag = 10,corr = TRUE,smooth = TRUE)
+#check for serial correlation using Durbin Watson
+#Gulk
+dwtest(Gulk1.ba.lm)
+dwtest(Gulk1.bw.lm)
+dwtest(Gulk1.bs.lm)
+#Wolv
+dwtest(Wolv1.ba.lm)
+dwtest(Wolv1.bw.lm)
+dwtest(Wolv1.bs.lm)
+#SC
+dwtest(SC1.ba.lm)
+dwtest(SC1.bw.lm)
+dwtest(SC1.bs.lm)
+#Sper
+dwtest(Sper1.ba.lm)
+dwtest(Sper1.bw.lm)
+dwtest(Sper1.bs.lm)
+#LC
+dwtest(LC1.ba.lm)
+dwtest(LC1.bw.lm)
+dwtest(LC1.bs.lm)
+dwtest(LC1.ba.loess)
+```
+###Based on results acf plots and Durbin Watson test, annual balance at Lemon Creek Glacier shows persistence in residuals of linear model of annual balance.
+
+\newpage
+#Seasonal correlations
+```{r}
+cor.test(Gulk1.bw.lm$residuals,Gulk1.bs.lm$residuals)
+cor.test(Wolv1.bw.lm$residuals,Wolv1.bs.lm$residuals)
+cor.test(Sper1.bw.lm$residuals,Sper1.bs.lm$residuals)
+cor.test(SC1.bw.lm$residuals,SC1.bs.lm$residuals)
+cor.test(LC1.bw.lm$residuals,LC1.bs.lm$residuals)
+```
+
+\newpage
+#Interannual Variability
+##Standard Deviations
+```{r}
+#Gulk
+Gulk.sda <- sd(Gulk1.ba.lm$residuals,na.rm = T);Gulk.sda
+Gulk.sdw <- sd(Gulk1.bw.lm$residuals,na.rm = T);Gulk.sdw
+Gulk.sds <- sd(Gulk1.bs.lm$residuals,na.rm = T);Gulk.sds
+Gulk.sdamp <- sd(Gulk1.bamp.lm$residuals,na.rm = T);Gulk.sdamp
+
+#Wolv
+Wolv.sda <- sd(Wolv1.ba.lm$residuals,na.rm = T);Wolv.sda
+Wolv.sdw <- sd(Wolv1.bw.lm$residuals,na.rm = T);Wolv.sdw
+Wolv.sds <- sd(Wolv1.bs.lm$residuals,na.rm = T);Wolv.sds
+Wolv.sdamp <- sd(Wolv1.bamp.lm$residuals,na.rm = T);Wolv.sdamp
+
+#SC
+SC.sda <- sd(SC1.ba.lm$residuals,na.rm = T);SC.sda
+SC.sdw <- sd(SC1.bw.lm$residuals,na.rm = T);SC.sdw
+SC.sds <- sd(SC1.bs.lm$residuals,na.rm = T);SC.sds
+SC.sdamp <- sd(SC1.bamp.lm$residuals,na.rm = T);SC.sdamp
+
+#Sper
+Sper.sda <- sd(Sper1.ba.lm$residuals,na.rm = T);Sper.sda
+Sper.sdw <- sd(Sper1.bw.lm$residuals,na.rm = T);Sper.sdw
+Sper.sds <- sd(Sper1.bs.lm$residuals,na.rm = T);Sper.sds
+Sper.sdamp <- sd(Sper1.bamp.lm$residuals,na.rm = T);Sper.sdamp
+
+#LC
+LC.sda <- sd(LC1.ba.lm$residuals,na.rm = T);LC.sda
+LC.sdw <- 0;LC.sdw
+LC.sds <- 0;LC.sds
+LC.sda.loess <- sd(LC1.ba.loess$residuals,na.rm = T);LC.sda.loess
+```
+\newpage
+##mean winter balances
+```{r}
+Gulk.mubw <- mean(Gulk1$Bw_mwe)
+Wolv.mubw <- mean(Wolv1$Bw_mwe)
+SC.mubw <- mean(SC1$Bw_mwe)
+Sper.mubw <- mean(Sper1$Bw_mwe)
+
+Gulk.R <- Gulk.sdw^2/(Gulk.sdw^2 + Gulk.sds^2)
+Wolv.R <- Wolv.sdw^2/(Wolv.sdw^2 + Wolv.sds^2)
+SC.R <- SC.sdw^2/(SC.sdw^2 + SC.sds^2)
+Sper.R <- Sper.sdw^2/(Sper.sdw^2 + Sper.sds^2)
+```
+\newpage
+#Standard Deviation 
+```{r,echo=FALSE,fig.width=8.5}
+sd.df <- as.data.frame(rbind(Gulk.sda,Wolv.sda,LC.sda,SC.sda,Sper.sda,Gulk.sdw,Wolv.sdw,LC.sdw,SC.sdw,Sper.sdw,Gulk.sds,Wolv.sds,LC.sds,SC.sds,Sper.sds))
+sd.df$Name <- c('GG','WG','LCG','SCG','SG','GG','WG','LCG','SCG','SG','GG','WG','LCG','SCG','SG')
+sd.df$Balance <- c("Annual","Annual","Annual","Annual","Annual","Winter","Winter","Winter","Winter","Winter", "Summer","Summer","Summer","Summer","Summer")
+sd.df$Name <- ordered(sd.df$Name, levels = c("GG","WG","LCG","SCG","SG"))
+
+#colors
+group.colors <- c('GG'='#984ea3','WG'='#377eb8','LCG'='#4daf4a','SCG'='#ff7f00','SG'='#e41a1c') #purple, blue, green, orange, red
+
+#plot
+sd.bar <- ggplot(sd.df,aes(fill=Name, y=V1,x=Balance))+
+  geom_bar(position = "dodge",stat = "identity")+
+  xlab(" ")+
+  ylab("Standard Deviation")+
+  theme_bw()+
+  theme(legend.title=element_blank())+
+  theme(legend.text = element_text(size=10))+
+  theme(text=element_text(size=18),
+        panel.grid.major.y = element_blank(), 
+        panel.grid.major.x = element_line(colour="grey", linetype="solid"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position = "top")+
+  theme(axis.text.x = element_text(color="black", 
+                                   size=15),
+        axis.text.y = element_text(color="black", 
+                                   size=15))+
+  theme(legend.position = "right")+
+  scale_fill_manual(values = group.colors)+
+  annotate("text", x=0.64,y=0.03,color="black",label="GG")+
+  annotate("text", x=0.82,y=0.03,color="black",label="WG")+
+  annotate("text", x=1.0,y=0.03,color="black",label="LCG")+
+  annotate("text", x=1.18,y=0.03,color="black",label="SCG")+
+  annotate("text", x=1.36,y=0.03,color="black",label="SG")+
+  annotate("text", x=1.64,y=0.03,color="black",label="GG")+
+  annotate("text", x=1.82,y=0.03,color="black",label="WG")+
+  annotate("text", x=2.00,y=0.03,color="black",label="LCG")+
+  annotate("text", x=2.18,y=0.03,color="black",label="SCG")+
+  annotate("text", x=2.36,y=0.03,color="black",label="SG")+
+  annotate("text", x=2.64,y=0.03,color="black",label="GG")+
+  annotate("text", x=2.82,y=0.03,color="black",label="WG")+
+  annotate("text", x=3,y=0.03,color="black",label="LCG")+
+  annotate("text", x=3.18,y=0.03,color="black",label="SCG")+
+  annotate("text", x=3.36,y=0.03,color="black",label="SG")
+sd.bar
+ggsave(sd.bar,file="AllGlacSD_new3.tiff",path='~/Desktop/SperryWx/SperryReanalysis/Trend/TrendPlots',width = 8.5, height = 11, units = "in", device="tiff",dpi = 300)
+ggsave(sd.bar,file="AllGlacSD_new3.jpg",path='~/Desktop/SperryWx/SperryReanalysis/Trend/TrendPlots',width = 8.5, height = 11, units = "in", device="jpeg",dpi = 300)
+```
+\newpage
+#Trend
+##estimate delta
+```{r}
+##annual balance
+#yearly
+dGGa <- first(Gulk1.ba.lm$fitted.values) - last(Gulk1.ba.lm$fitted.values) # m yr^-1
+dWGa <- first(Wolv1.ba.lm$fitted.values) - last(Wolv1.ba.lm$fitted.values) # m yr^-1
+dSCGa <- first(SC1.ba.lm$fitted.values) - last(SC1.ba.lm$fitted.values) # m yr^-1
+dSGa <- first(Sper1.ba.lm$fitted.values) - last(Sper1.ba.lm$fitted.values) # m yr^-1
+dLCGa <- first(LC1.ba.lm$fitted.values) - last(LC1.ba.lm$fitted.values) # m yr^-1
+dLCGa.loess <- first(LC1.ba.loess$fitted.values) - last(LC1.ba.loess$fitted.values) # m yr^-1
+
+#decadal
+ddGGa <- (first(Gulk1.ba.lm$fitted.values) - last(Gulk1.ba.lm$fitted.values))/length(Gulk1$Year)*10 # m yr^-1 decade^-1
+
+ddWGa <- (first(Wolv1.ba.lm$fitted.values) - last(Wolv1.ba.lm$fitted.values))/length(Wolv1$Year)*10 # m yr^-1 decade^-1
+
+ddSCGa <- (first(SC1.ba.lm$fitted.values) - last(SC1.ba.lm$fitted.values))/length(SC1$Year)*10 # m yr^-1 decade^-1
+
+ddSGa <- (first(Sper1.ba.lm$fitted.values) - last(Sper1.ba.lm$fitted.values))/length(Sper1$Year)*10 # m yr^-1 decade^-1
+
+ddLCGa <- (first(LC1.ba.lm$fitted.values) - last(LC1.ba.lm$fitted.values))/length(LC1$Year)*10 # m yr^-1 decade^-1
+ddLCGa.loess <- (first(LC1.ba.loess$fitted.values) - last(LC1.ba.loess$fitted.values))/length(LC1$Year)*10 # m yr^-1 decade^-1
+#delta.a <- combine(dWGa,dGGa,dLCGa,dSCGa,dSGa);delta.a
+
+##winter balance
+#yearly
+dGGw <- first(Gulk1.bw.lm$fitted.values) - last(Gulk1.bw.lm$fitted.values) # m yr^-1
+dWGw <- first(Wolv1.bw.lm$fitted.values) - last(Wolv1.bw.lm$fitted.values) # m yr^-1
+dSCGw <- first(SC1.bw.lm$fitted.values) - last(SC1.bw.lm$fitted.values) # m yr^-1
+dSGw <- first(Sper1.bw.lm$fitted.values) - last(Sper1.bw.lm$fitted.values) # m yr^-1
+dLCGw <- first(LC1.bw.lm$fitted.values) - last(LC1.bw.lm$fitted.values) # m yr^-1
+
+#decadal
+ddGGw <- (first(Gulk1.bw.lm$fitted.values) - last(Gulk1.bw.lm$fitted.values))/length(Gulk1$Year)*10 # m yr^-1 decade^-1
+
+ddWGw <- (first(Wolv1.bw.lm$fitted.values) - last(Wolv1.bw.lm$fitted.values))/length(Wolv1$Year)*10 # m yr^-1 decade^-1
+
+ddSCGw <- (first(SC1.bw.lm$fitted.values) - last(SC1.bw.lm$fitted.values))/length(SC1$Year)*10 # m yr^-1 decade^-1
+
+ddSGw <- (first(Sper1.bw.lm$fitted.values) - last(Sper1.bw.lm$fitted.values))/length(Sper1$Year)*10 # m yr^-1 decade^-1
+
+ddLCGw <- (first(LC1.bw.lm$fitted.values) - last(LC1.bw.lm$fitted.values))/length(LC1$Year)*10 # m yr^-1 decade^-1
+
+
+##summer balance
+#yearly
+dGGs <- first(Gulk1.bs.lm$fitted.values) - last(Gulk1.bs.lm$fitted.values) # m yr^-1
+dWGs <- first(Wolv1.bs.lm$fitted.values) - last(Wolv1.bs.lm$fitted.values) # m yr^-1
+dSCGs <- first(SC1.bs.lm$fitted.values) - last(SC1.bs.lm$fitted.values) # m yr^-1
+dSGs <- first(Sper1.bs.lm$fitted.values) - last(Sper1.bs.lm$fitted.values) # m yr^-1
+dLCGs <- first(LC1.bs.lm$fitted.values) - last(LC1.bs.lm$fitted.values) # m yr^-1
+
+#decadal
+ddGGs <- (first(Gulk1.bs.lm$fitted.values) - last(Gulk1.bs.lm$fitted.values))/length(Gulk1$Year)*10 # m yr^-1 decade^-1
+
+ddWGs <- (first(Wolv1.bs.lm$fitted.values) - last(Wolv1.bs.lm$fitted.values))/length(Wolv1$Year)*10 # m yr^-1 decade^-1
+
+ddSCGs <- (first(SC1.bs.lm$fitted.values) - last(SC1.bs.lm$fitted.values))/length(SC1$Year)*10 # m yr^-1 decade^-1
+
+ddSGs <- (first(Sper1.bs.lm$fitted.values) - last(Sper1.bs.lm$fitted.values))/length(Sper1$Year)*10 # m yr^-1 decade^-1
+
+ddLCGs <- (first(LC1.bs.lm$fitted.values) - last(LC1.bs.lm$fitted.values))/length(LC1$Year)*10 # m yr^-1 decade^-1
+
+
+##amplitude
+dGGamp <- first(Gulk1.bamp.lm$fitted.values) - last(Gulk1.bamp.lm$fitted.values) # m yr^-1
+dWGamp <- first(Wolv1.bamp.lm$fitted.values) - last(Wolv1.bamp.lm$fitted.values) # m yr^-1
+dSCGamp <- first(SC1.bamp.lm$fitted.values) - last(SC1.bamp.lm$fitted.values) # m yr^-1
+dSGamp <- first(Sper1.bamp.lm$fitted.values) - last(Sper1.bamp.lm$fitted.values) # m yr^-1
+
+#signal to noise ratio
+#annual
+snrs_a <- as.data.frame(c(dGGa/Gulk.sda, dWGa/Wolv.sda, dSCGa/SC.sda, dSGa/Sper.sda, dLCGa/LC.sda));snrs_a
+snrs_a$names <- c("Gulk","Wolv","SC","Sper","LC");snrs_a
+colnames(snrs_a) <- c("snr","names");snrs_a
+#winter
+snrs_w <- as.data.frame(c(dGGw/Gulk.sdw, dWGw/Wolv.sdw, dSCGw/SC.sdw, dSGw/Sper.sdw))
+snrs_w$names <- c("Gulk","Wolv","SC","Sper")
+colnames(snrs_w) <- c("snr","names");snrs_w
+#summer
+snrs_s <- as.data.frame(c(dGGs/Gulk.sds, dWGs/Wolv.sds, dSCGs/SC.sds, dSGs/Sper.sds))
+snrs_s$names <- c("Gulk","Wolv","SC","Sper")
+colnames(snrs_s) <- c("snr","names");snrs_s
+
+
+##t-test (Medwedeff and Roe)
+#Roe's t-test
+#annual
+WGta = dWGa/Wolv.sda*(sqrt((length(Wolv1$Year)-2)/12));WGta
+WGpta = 1-pt(WGta,length(Wolv1$Year)-1);WGpta
+
+GGta = dGGa/Gulk.sda*(sqrt((length(Gulk1$Year)-2)/12))
+GGpta = 1-pt(GGta,length(Gulk1$Year)-1);GGpta
+
+LCGta = dLCGa/LC.sda*(sqrt((length(LC1$Year)-2)/12))
+LCGpta = 1-pt(LCGta,length(LC1$Year)-1);LCGpta
+
+SCGta = dSCGa/SC.sda*(sqrt((length(SC1$Year)-2)/12))
+SCGpta = 1-pt(SCGta,length(SC1$Year)-1);SCGpta
+
+SGta = dSGa/Sper.sda*(sqrt((length(Sper1$Year)-2)/12))
+SGpta = 1-pt(SGta,length(Sper1$Year)-1);SGpta
+
+#winter
+WGtw = dWGw/Wolv.sdw*(sqrt((length(Wolv1$Year)-2)/12))
+WGptw = 1-pt(WGtw,length(Wolv1$Year)-1)
+WGptw
+
+GGtw = dGGw/Gulk.sdw*(sqrt((length(Gulk1$Year)-2)/12));
+GGptw = 1-pt(GGtw,length(Gulk1$Year)-1)
+GGptw
+
+SCGtw = dSCGw/SC.sdw*(sqrt((length(SC1$Year)-2)/12));
+SCGptw = 1-pt(SCGtw,length(SC1$Year)-1)
+SCGptw
+
+SGtw = dSGw/Sper.sdw*(sqrt((length(Sper1$Year)-2)/12));
+SGptw = 1-pt(SGtw,length(Sper1$Year)-1)
+SGptw
+
+#summer
+WGts = dWGs/Wolv.sds*(sqrt((length(Wolv1$Year)-2)/12));
+WGpts = 1-pt(WGts,length(Wolv1$Year)-1)
+WGpts
+
+GGts = dGGs/Gulk.sds*(sqrt((length(Gulk1$Year)-2)/12));
+GGpts = 1-pt(GGts,length(Gulk1$Year)-1)
+GGpts
+
+SCGts = dSCGs/SC.sds*(sqrt((length(SC1$Year)-2)/12));
+SCGpts = 1-pt(SCGts,length(SC1$Year)-1)
+SCGpts
+
+SGts = dSGs/Sper.sds*(sqrt((length(Sper1$Year)-2)/12));
+SGpts = 1-pt(SGts,length(Sper1$Year)-1)
+SGpts
+
+#amplitude
+WGtamp = (dWGamp/Wolv.sdamp)*(sqrt((length(Wolv1$Year)-2)/12));
+WGptamp = 1-pt(WGtamp,length(Wolv1$Year)-1)
+WGptamp
+
+GGtamp = dGGamp/Gulk.sdamp*(sqrt((length(Gulk1$Year)-2)/12));
+GGptamp = 1-pt(GGtamp,length(Gulk1$Year)-1)
+GGptamp
+
+SCGtamp = dSCGamp/SC.sdamp*(sqrt((length(SC1$Year)-2)/12));
+SCGptamp = 1-pt(SCGtamp,length(SC1$Year)-1)
+SCGptamp
+
+SGtamp = dSGamp/Sper.sdamp*(sqrt((length(Sper1$Year)-2)/12));
+SGptamp = 1-pt(SGtamp,length(Sper1$Year)-1)
+SGptamp
+
+t_matrix <-as.data.frame(rbind(WGpta,WGptw,WGpts,WGptamp,GGpta,GGptw,GGpts,GGptamp,LCGpta,SCGpta,SCGptw,SCGpts,SGpta,SGptw,SGpts,SGptamp))
+print(t_matrix)
+
+
+#SNR
+#annual
+WG_gamma_a = dWGa/Wolv.sda*(1/length(Wolv1$Year))*10
+GG_gamma_a = dGGa/Gulk.sda*(1/length(Gulk1$Year))*10
+LCG_gamma_a = dLCGa/LC.sda*(1/length(LC1$Year))*10
+SCG_gamma_a = dSCGa/SC.sda*(1/length(SC1$Year))*10
+SG_gamma_a = dSGa/Sper.sda*(1/length(Sper1$Year))*10
+
+#winter
+WG_gamma_w = dWGw/Wolv.sdw*(1/length(Wolv1$Year))*10
+GG_gamma_w = dGGw/Gulk.sdw*(1/length(Gulk1$Year))*10
+SCG_gamma_w = dSCGw/SC.sdw*(1/length(SC1$Year))*10
+SG_gamma_w = dSGw/Sper.sdw*(1/length(Sper1$Year))*10
+
+#summer
+WG_gamma_s = dWGs/Wolv.sds*(1/length(Wolv1$Year))*10
+GG_gamma_s = dGGs/Gulk.sds*(1/length(Gulk1$Year))*10
+SCG_gamma_s = dSCGs/SC.sds*(1/length(SC1$Year))*10
+SG_gamma_s = dSGs/Sper.sds*(1/length(Sper1$Year))*10
+```
+\newpage
+#Time Series of standardized mass balance anomalies 
+```{r,echo=FALSE,fig.width=8.5}
+#a little renaming of variables
+D3 <- D2
+D3$id[D3$id == "Gulkana"] <- "GG"
+D3$id[D3$id == "Wolverine"] <- "WG"
+D3$id[D3$id == "Lemon_Creek"] <- "LCG"
+D3$id[D3$id == "South_Cascade"] <- "SCG"
+D3$id[D3$id == "Sperry"] <- "SG"
+#create df of all amp
+#not necessary for plotting
+# GG.yrs <- seq(1966,2018,by=1)
+# GG.bamp <- as.data.frame(cbind(GG.yrs,Gulk1.bamp))
+# GG.bamp$id <- "Gulkana"
+# colnames(GG.bamp) <- c("Year","amp","id")
+# 
+# WG.yrs <- seq(1966,2018,1)
+# WG.bamp <- as.data.frame(cbind(WG.yrs,Wolv1.bamp))
+# WG.bamp$id <- "Wolverine"
+# colnames(WG.bamp) <- c("Year","amp","id")
+# 
+# SC.yrs <- seq(1959,2018,1)
+# SC.bamp <- as.data.frame(cbind(SC.yrs,SC1.bamp))
+# SC.bamp$id <- "SCG"
+# colnames(SC.bamp) <- c("Year","amp","id")
+# 
+# SG.yrs <- seq(2005,2017,1)
+# SG.bamp <- as.data.frame(cbind(SG.yrs,Sper1.bamp))
+# SG.bamp$id <- "SP"
+# colnames(SG.bamp) <- c("Year","amp","id")
+# 
+# glac.bamp <- rbind(GG.bamp,WG.bamp,SC.bamp,SG.bamp)
+
+#plotting with facets
+D4 <- D3  
+D5 <- melt(D4, id.vars = c("Year","id"))
+D5$variable <- ordered(D5$variable, levels = c("Ba_mwe", "Bw_mwe", "Bs_mwe"))
+D5$variable <- factor(D5$variable, labels = c("(a)", "(b)","(c)"))
+D5$id <- ordered(D5$id, levels = c("GG","WG","LCG","SCG","SG"))
+group.colors <- c('GG'='#984ea3','WG'='#377eb8','LCG'='#4daf4a','SCG'='#ff7f00','SG'='#e41a1c') #purple, blue, green, orange, red
+
+#for adding a,b,c to panels
+dat_text <- data.frame(
+  label = c("a", "b", "c"),
+  variable   = c("(a)", "(b)", "(c)"),
+  x     = c(1952, 1952, 1952),
+  y     = c(3.5,6.5,0.5))
+
+#plot
+#####fix y axis a-1 label
+#####add panel labels
+D5.plot <- ggplot(data = D5,aes(x=Year,y=value,group=id))+
+  geom_smooth(aes(color=id),linetype="dashed",method="lm",se=F,size=1.5)+ #aes(linetype=id)...if we need each line to be different
+  #scale_linetype_manual(values = c("twodash","longdash","dotdash","dotted","dashed"))+
+  geom_line(aes(color=id),stat="smooth",data = subset(D5,variable == "(a)" & id == "GG"),method = "lm",se=F,size=2,alpha=0.75)+
+  #geom_line(stat="smooth",data = subset(D5,variable == "(a)" & id == "WG"),method = "lm",se=F,size=2,alpha=0.75)+
+  geom_line(aes(color=id),stat="smooth",alpha=0.75,data = subset(D5,variable == "(a)" & id == "LCG"),method = "lm",se=F,size=2)+
+  geom_line(aes(color=id),stat="smooth",alpha=0.75,data = subset(D5,variable == "(c)" & id == "SCG"),method = "lm",se=F,size=2)+
+  geom_line(aes(color=id),stat="smooth",alpha=0.75,data = subset(D5,variable == "(c)" & id == "WG"),method = "lm",se=F,size=2)+
+  geom_line(aes(color=id),stat="smooth",alpha=0.75,data = subset(D5,variable == "(c)" & id == "GG"),method = "lm",se=F,size=2)+
+  geom_point(aes(fill=id,shape=id),size=2)+
+  scale_shape_manual(values = c(21,22,23,24,25))+
+  xlab("Time (Years)")+
+  #ylab("Mass Balance (m w.e. a-1)")+
+  ylab(expression(Mass~Balance~Anomaly~(m~w.e.~a^-1)))+
+  scale_x_continuous(breaks = seq(1950,2018,10))+
+  theme_bw()+
+  theme(legend.text = element_text(size=12))+
+  theme(text=element_text(size=18, family = "Arial"),
+        panel.grid.major.y = element_line(colour="grey", linetype="solid"), 
+        panel.grid.major.x = element_line(colour="grey", linetype="solid"),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position = "top")+
+  theme(axis.text.x = element_text(color="black", 
+                                   size=12),
+        axis.text.y = element_text(color="black", 
+                                   size=18))+
+  scale_color_manual(values=group.colors)+
+  scale_fill_manual(values = group.colors)+
+  theme(legend.position = "right",legend.background = element_blank())+
+  theme(strip.text.y=element_blank(),strip.background = element_blank())+
+  geom_text(data=dat_text,mapping=aes(x=x,y=y,label=label,group=NULL,color=NULL),show.legend =FALSE,size=4,fontface="bold")+
+  facet_wrap(~variable, ncol = 1,scales="free_y",strip.position = "right")+
+  theme(legend.title=element_blank())+
+  guides(shape = guide_legend(override.aes = list(size=5)))
+D5.plot
+D5.plot <- reposition_legend(D5.plot,position="left",panel = 'panel-1-2')
+
+#save
+ggsave(D5.plot,file="BaBwBsAmp_GlacAll.tiff",path='~/Desktop/SperryWx/SperryReanalysis/Trend/TrendPlots',width = 8.5, height = 11, units = "in", device="tiff",dpi = 300)
+ggsave(D5.plot,file="BaBwBsAmp_GlacAll.jpg",path='~/Desktop/SperryWx/SperryReanalysis/Trend/TrendPlots',width = 8.5, height = 11, units = "in", device="jpeg",dpi = 300)
+```
+
+```{r,eval=F,echo=F,include=F}
+
+
+```
+

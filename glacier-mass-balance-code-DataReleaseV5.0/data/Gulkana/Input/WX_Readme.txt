@@ -1,0 +1,2 @@
+The Precipitation data provided here contains a sensor change the occurred on September 22,2015 when the 'Rocket' gauge 
+was removed for the glacier margin. The precipitation data provided after this data was measured using a TPG and has not been corrected for differences from the Rocket gauge

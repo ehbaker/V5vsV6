@@ -1,0 +1,34 @@
+Year,Bw_mwe,Bs_mwe,Ba_mwe,ELA_m,Bw_Date,Ba_Date,bw_gradient_mwe_km,bs_gradient_mwe_km,ba_gradient_mwe_km,Lapse_Rate,Time_System,Integration_Method,Integration_Surface,Source
+1986,2.61,-3.20673140332068,-0.596731403320677,1995.172250699,05/19/1986,10/24/1986,10.88         1.56,NaN,39.29         3.64,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+1987,2.09,-3.91954038528572,-1.82954038528572,2193.50851909026,04/19/1987,10/31/1987,4.9       -0.87,NaN,19.06         6.29,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+1988,2.35622391382724,-3.31310038380339,-0.956876469976158,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+1989,2.52,-3.56445749963876,-1.04445749963876,2049.95765472313,04/07/1989,10/10/1989,8.29       -2.59,NaN,52.05         6.33,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+1990,2.68,-2.76019603941252,-0.0801960394125207,1887.01841593743,05/02/1990,10/01/1990,11.66         1.49,NaN,9.81        2.43,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+1991,3.79,-3.88746763835668,-0.0974676383566845,1883.90756213323,04/15/1991,10/16/1991,17.37        -1.34,NaN,49.3         4.39,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+1992,2,-4.02199684420717,-2.02199684420718,2092.47278766391,04/30/1992,10/12/1992,9.38        2.38,NaN,21.91        10.35,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+1993,2.02,-3.32295363729883,-1.30295363729883,2202.44131422888,05/02/1993,10/14/1993,6.75       -1.17,NaN,23.56         3.01,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+1994,2.49,-4.22023808155138,-1.73023808155138,2338.84647690568,04/14/1994,10/10/1994,4.29        1.58,NaN,19.11         3.49,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+1995,3.13,-3.74778031195542,-0.617780311955422,1967.18838731201,04/19/1995,09/27/1995,9.37        0.26,NaN,24.48         5.44,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+1996,3.16,-2.99263323883634,0.167366761163657,1867.88865277337,05/23/1996,10/11/1996,11.05         2.89,NaN,31.19         6.58,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+1997,3.56,-2.99774778934061,0.562252210659391,1834.96930402546,05/07/1997,10/01/1997,6.9         2.4,NaN,22.76         7.11,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+1998,3.21,-4.82734740057026,-1.61734740057026,2136.99913082904,04/12/1998,10/08/1998,7.35        3.41,NaN,27.67         7.14,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+1999,3.98,-2.14867404722557,1.83132595277443,1847.25342519914,05/18/1999,09/23/1999,3.21        4.96,NaN,2.74        20.24,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2000,3.32,-2.42335369268054,0.896646307319457,1837.6132196683,05/11/2000,10/14/2000,4.94        0.81,NaN,12.08          4.4,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2001,1.9,-3.14383950882871,-1.24383950882871,2421.87292455702,05/06/2001,10/06/2001,0.42       -1.44,NaN,4        2.31,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2002,4.12,-3.25680424978836,0.86319575021164,1856.22175128555,04/23/2002,10/24/2002,13.7          6.6,NaN,27.66         12.1,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2003,2.59,-4.55475834673323,-1.96475834673323,2124.92847138643,04/25/2003,10/07/2003,9.47        1.99,NaN,27.83         9.85,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2004,2.18,-3.49665332605984,-1.31665332605984,2106.31219270811,03/27/2004,10/08/2004,11.72         0.21,NaN,39.2         6.56,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2005,2.01,-4.54581300820508,-2.53581300820508,2333.688737509,04/18/2005,09/30/2005,3.93         1.5,NaN,13.47         5.29,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2006,2.52,-3.89992915182459,-1.37992915182459,2798.85929457396,04/18/2006,10/14/2006,8.02       -2.38,NaN,23.13         0.81,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2007,3.41,-3.56353926808642,-0.153539268086423,1871.24369519375,05/04/2007,09/28/2007,8.49       -0.94,NaN,30.68         1.81,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2008,3.21,-3.18821586348015,0.021784136519849,1850.82458983923,05/14/2008,10/04/2008,10        -2.75,NaN,30.97         2.09,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2009,2.66,-4.44712225095478,-1.78712225095478,2328.65793687137,05/15/2009,09/29/2009,5.23        1.03,NaN,19.15         3.29,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2010,2.63,-3.00104413747278,-0.371044137472778,1907.6586575976,05/05/2010,10/10/2010,6.89        0.54,NaN,23.46          3.4,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2011,3.47,-2.21692865442042,1.25307134557958,1794.32250777717,05/17/2011,09/25/2011,10.42        -1.61,NaN,28.01          3.1,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2012,3.45,-3.49478595366317,-0.0447859536631709,1854.5597294628,05/04/2012,10/12/2012,9.36        0.69,NaN,41.25         2.53,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2013,3.21,-4.01464461111338,-0.804644611113382,1915.64524855198,04/30/2013,09/22/2013,5.24        3.71,NaN,30.6         1.94,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2014,3.64,-3.92644036696193,-0.286440366961929,1927.76649614289,04/28/2014,10/11/2014,8.78       -0.55,NaN,32.06         5.77,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2015,2.66,-6.0067159467619,-3.3467159467619,2172.93108315118,04/14/2015,10/23/2015,7.56        3.89,NaN,19.84        12.04,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2016,3.33,-4.2353363942259,-0.905336394225901,1963.8482558092,03/28/2016,10/04/2016,-1.64        6.03,NaN,17.87          4.3,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2017,3.89,-4.64077927678273,-0.750779276782731,1941.85883122467,05/01/2017,10/06/2017,5.5        1.58,NaN,18.49         2.44,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed
+2018,3.73,-3.61411829884437,0.115881701155633,1882.54876214989,04/22/2018,10/05/2018,4.54       -2.22,NaN,12.65         0.94,-6.5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed

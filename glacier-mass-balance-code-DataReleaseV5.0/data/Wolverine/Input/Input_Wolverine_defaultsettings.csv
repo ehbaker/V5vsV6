@@ -1,0 +1,16 @@
+Option,Setting
+integration_surface,conventional
+integration_method,piecewise-linear
+geodetic_calibration,breakpoint
+calibration_breakpoints,1979;2006
+index_sites,A;AU;B;C
+normalization_site,B;NaN;NaN
+ nan_incomplete_glaciological_data,0
+Include_Previous_Glacierwide_Solutions,0
+years,1966:2018
+incorporate_TSLs,0
+glaciological_uncertainty,0
+snow_ablation_uncertainty,0
+ice_ablation_uncertainty,0
+aad_uncertainty,0
+balance_profile_uncertainty,0

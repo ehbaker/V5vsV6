@@ -1,0 +1,208 @@
+function [Filled_Glaciological_data] = Model_Missing_Glaciological_Observations(glacier,Glaciological_data,years,sites,Weather_data,AAD,ks,ki,lapse_rate,precipitation_ratios_table,integration_method,integration_surface,plot_ablation_model)
+%% Model_Missing_Glaciological_Ovservations.m
+%function uses a mass balance model to fill in missing point balances in
+%the input file. The mass balance model is a combined temperature index and
+%precipitation. Mass balance model coefficients are calibrated in Calibrate_Precipitation_and_Ablation Models.m 
+%and used here to scale local weather station data to a given site on the glacier
+
+%% General outline 
+% 1) Date formatting and data sorting -- Convert all dates (missing or real) to datenumbers and contruct a
+% table the conatins all sites the user defined to be modeled
+
+% 2) Determine missing dates and point balances  -- Using the
+% Find_Mass_Maximum_and_Minimum_Adjustments.m function predict the mass max
+% and minimum dates for sites not observed. Then using the modeled mass
+% balance timeseries from that function, predict the missing point balance
+% values.
+
+%% Input 
+
+%glacier -- Name of glacier user is working on
+
+%Glaciological_data -- Table of glaciological point balances. User can
+%   insert nan values for any site they desire to be filled for a specific
+%   year
+
+%years -- List of years the user want data to be filled during
+
+%sites -- List of site the user wants to be filled. If provided then this
+%   function will model the listed sites for every year. If sites is empty
+%   the function will only model a site balance if it contains a nan value
+
+%Weather_data -- Table of daily average temperatures (*C) and total daily
+%   precipitation (mm)
+
+%ks -- Calibrated degree day coefficient for snow
+
+%ki -- Calibrated degree day coefficient for ice
+
+%lapse_rate -- Lapse rate
+
+%precipitation_ratios_table -- Table of calibrated precipitation ratios
+%   between weather station and glaciological sites
+
+%integration_method -- Integration method (Index, Linear balance gradient,
+%   Piecewise balance profile
+%integration_surface -- Integration surface (Conventional, Reference
+%   Surface, or specific year hypsometry)
+%plot_ablation_model -- Flag to display mass balance model or not
+
+%% Output
+%Filled_Glaciological_data -- Table of glaciological dat
+
+
+
+%% 1) Date formatting and data sorting 
+dbstop if error
+time_system=1;
+dates=[];
+
+for i=1:height(Glaciological_data)
+    % spring date not allowed to be NaN but fall date is
+    if strcmp(Glaciological_data.spring_date(i),'NaN')||strcmp(Glaciological_data.spring_date(i),'Nan')||strcmp(Glaciological_data.spring_date(i),'nan')&&strcmp(Glaciological_data.fall_date(i),'NaN')||strcmp(Glaciological_data.fall_date(i),'Nan')||strcmp(Glaciological_data.fall_date(i),'nan')
+       dates=[dates;NaN NaN];
+    elseif strcmp(Glaciological_data.spring_date(i),'NaN')||strcmp(Glaciological_data.spring_date(i),'Nan')||strcmp(Glaciological_data.spring_date(i),'nan')
+       dates=[dates;NaN datenum(Glaciological_data.fall_date(i))];
+    elseif strcmp(Glaciological_data.fall_date(i),'NaN')||strcmp(Glaciological_data.fall_date(i),'Nan')||strcmp(Glaciological_data.fall_date(i),'nan')
+        dates=[dates;datenum(Glaciological_data.spring_date(i))  NaN];
+    else  
+        dates=[dates;datenum(Glaciological_data.spring_date(i))  datenum(Glaciological_data.fall_date(i))];
+    end
+end
+
+Glaciological_data.spring_date=dates(:,1);    
+Glaciological_data.fall_date=dates(:,2); 
+Filled_Glaciological_data=table([],[],[],[],[],[],[],[],[],[],[],'VariableNames',Glaciological_data.Properties.VariableNames);
+% if isempty(sites)
+sites=sites(~contains(sites,'TSL'));
+for year=1:length(years)
+    insitu_data=Glaciological_data(Glaciological_data.Year==years(year),:);
+    if isempty(insitu_data)&&isempty(sites)
+        Filled_Glaciological_data=[Filled_Glaciological_data;insitu_data];
+    else
+    if isempty(insitu_data)&&~isempty(sites)
+        filled_year=ones(length(sites),1).*years(year);
+        filled_sites=sites;
+        filler_nans=ones(length(sites),1).*nan;
+        filler_dates=[ones(length(sites),1).*datenum(['5/1/',num2str(years(year))]),ones(length(sites),1).*datenum(['9/30/',num2str(years(year))])];
+        filler_fill_tag = zeros(length(sites),1);
+        site_elevations=[];
+        for site=1:length(sites)
+            site_elevations=[Glaciological_data.Year(strcmp(Glaciological_data.site_name,sites(site))) Glaciological_data.elevation(strcmp(Glaciological_data.site_name,sites(site)))];
+            elevations(site,1)=interp1(site_elevations(:,1),site_elevations(:,2),years(year),'linear','extrap');
+        end
+        insitu_data=table(filled_year,filled_sites,filler_dates(:,1),filler_dates(:,2),elevations,filler_nans,filler_nans,filler_nans,filler_nans,filler_fill_tag,filler_fill_tag,'VariableNames',Glaciological_data.Properties.VariableNames);
+        
+    elseif ~isempty(sites)
+        for site=1:length(sites)
+            if sum(strcmp(insitu_data.site_name,sites(site)))==0
+                site_elevations=[Glaciological_data.Year(strcmp(Glaciological_data.site_name,sites(site))) Glaciological_data.elevation(strcmp(Glaciological_data.site_name,sites(site)))];
+                elevation=interp1(site_elevations(:,1),site_elevations(:,2),years(year),'linear','extrap');
+                insitu_data=[insitu_data;table(years(year),sites(site),datenum(['5/1/',num2str(years(year))]),datenum(['9/30/',num2str(years(year))]),elevation,nan,nan,nan,nan,0,0,'VariableNames',Glaciological_data.Properties.VariableNames)];
+                    
+            end
+        end
+    end
+
+
+
+
+    spring_dates=insitu_data.spring_date;
+    fall_dates=insitu_data.fall_date;
+    
+    if sum(isnan(insitu_data.spring_date))>0
+        spring_dates=insitu_data.spring_date;
+        insitu_data.spring_date(isnan(insitu_data.spring_date))=datenum(['5/1/',num2str(years(year))]);
+    end
+    if sum(isnan(insitu_data.fall_date))>0
+        fall_dates=insitu_data.fall_date;
+        insitu_data.fall_date(isnan(insitu_data.fall_date))=datenum(['9/30/',num2str(years(year))]);
+    end
+    
+    
+%% 2) Determine missing dates and point balances    
+    [~,mass_maximum_date_numbers,~,mass_minimum_date_numbers,Modeled_Mass_Balance] = Find_Mass_Maximum_and_Minimum_Adjustments(insitu_data,Weather_data,lapse_rate,ks,ki,precipitation_ratios_table,glacier,AAD,time_system,integration_method,integration_surface,plot_ablation_model);
+    
+    if sum(isnan(spring_dates))>0
+        insitu_data.spring_date(isnan(spring_dates))=mass_maximum_date_numbers(isnan(spring_dates));
+    end
+    if sum(isnan(fall_dates))>0
+        insitu_data.fall_date(isnan(fall_dates))=mass_minimum_date_numbers(isnan(fall_dates));
+    end
+    
+    
+    Modeled_Mass_Balance.Date=datenum(Modeled_Mass_Balance.Date);
+    for site=1:height(insitu_data)            
+        if isnan(insitu_data.bw(site)) && ~isnan(insitu_data.ba(site))
+            if mass_minimum_date_numbers(site)>=insitu_data.fall_date(site)                    
+                Modeled_Mass_Balance(:,strcmp(Modeled_Mass_Balance.Properties.VariableNames,insitu_data.site_name(site)))=array2table((insitu_data.ba(site)-table2array(Modeled_Mass_Balance(Modeled_Mass_Balance.Date==insitu_data.fall_date(site),strcmp(Modeled_Mass_Balance.Properties.VariableNames,insitu_data.site_name(site)))))+table2array(Modeled_Mass_Balance(:,strcmp(Modeled_Mass_Balance.Properties.VariableNames,insitu_data.site_name(site)))));
+                insitu_data.bw(site)=table2array(Modeled_Mass_Balance(Modeled_Mass_Balance.Date==mass_maximum_date_numbers(site),strcmp(Modeled_Mass_Balance.Properties.VariableNames,insitu_data.site_name(site))));
+                insitu_data.spring_date(site)=mass_maximum_date_numbers(site);
+            else 
+                Modeled_Mass_Balance(:,strcmp(Modeled_Mass_Balance.Properties.VariableNames,insitu_data.site_name(site)))=array2table((insitu_data.ba(site)-table2array(Modeled_Mass_Balance(Modeled_Mass_Balance.Date==mass_minimum_date_numbers(site),strcmp(Modeled_Mass_Balance.Properties.VariableNames,insitu_data.site_name(site)))))+table2array(Modeled_Mass_Balance(:,strcmp(Modeled_Mass_Balance.Properties.VariableNames,insitu_data.site_name(site)))));
+                insitu_data.bw(site)=table2array(Modeled_Mass_Balance(Modeled_Mass_Balance.Date==mass_maximum_date_numbers(site),strcmp(Modeled_Mass_Balance.Properties.VariableNames,insitu_data.site_name(site))));
+                insitu_data.spring_date(site)=mass_maximum_date_numbers(site);
+                insitu_data.bw_fill(site) = 2;
+            end
+        elseif ~isnan(insitu_data.bw(site)) && isnan(insitu_data.ba(site))                 
+                Modeled_Mass_Balance(:,strcmp(Modeled_Mass_Balance.Properties.VariableNames,insitu_data.site_name(site)))=array2table((insitu_data.bw(site)-table2array(Modeled_Mass_Balance(Modeled_Mass_Balance.Date==insitu_data.spring_date(site),strcmp(Modeled_Mass_Balance.Properties.VariableNames,insitu_data.site_name(site)))))+table2array(Modeled_Mass_Balance(:,strcmp(Modeled_Mass_Balance.Properties.VariableNames,insitu_data.site_name(site)))));
+                insitu_data.ba(site)=table2array(Modeled_Mass_Balance(Modeled_Mass_Balance.Date==mass_minimum_date_numbers(site),strcmp(Modeled_Mass_Balance.Properties.VariableNames,insitu_data.site_name(site))));
+                insitu_data.fall_date(site)=mass_minimum_date_numbers(site);
+                insitu_data.ba_fill(site) = 2;
+        end
+    end
+    if sum(isnan(insitu_data.bw))>0 && sum(isnan(insitu_data.ba))>0
+        previous_fall_observation_dates=datenum(['9/30/',num2str(years(year)-1)],'mm/dd/yyyy').*ones(height(insitu_data),1);
+        previous_spring_observation_dates=datenum(['5/1/',num2str(years(year)-1)],'mm/dd/yyyy').*ones(height(insitu_data),1);
+        previous_year=(years(year)-1).*ones(height(insitu_data),1);
+        previous_insitu_data=insitu_data;
+        previous_insitu_data.fall_date=previous_fall_observation_dates;
+        previous_insitu_data.spring_date=previous_spring_observation_dates;
+        previous_insitu_data.Year=previous_year;
+        [~,~,~,previous_mass_minimum_date_numbers] = Find_Mass_Maximum_and_Minimum_Adjustments(previous_insitu_data,Weather_data,lapse_rate,ks,ki,precipitation_ratios_table,glacier,AAD,time_system,integration_method,integration_surface,plot_ablation_model);
+        for site=1:height(insitu_data)
+            if isnan(insitu_data.bw(site)) && isnan(insitu_data.ba(site))
+                precipitation_ratio=precipitation_ratios_table.precipitation_ratios(strcmp(precipitation_ratios_table.site_name,insitu_data.site_name(site)));
+                if isempty(precipitation_ratio)||isnan(precipitation_ratio)%then no precipitation ratio could be calibrated for this site and we need to find one to use
+                    precipitation_ratio=precipitation_ratios_table.precipitation_ratios(strcmp(precipitation_ratios_table.site_name,'All_sites'));%so we use a global fit
+                end
+                [Site_Weather]=Model_Site_Weather(Weather_data,insitu_data.elevation(site),previous_mass_minimum_date_numbers(site),mass_minimum_date_numbers(site),glacier,lapse_rate,precipitation_ratio);
+                site_balance=0;
+                for day=1:height(Site_Weather)
+                    site_balance=site_balance+Site_Weather.Precipitation(day,1);
+                    if Site_Weather.Temperature(day,1)>0 && site_balance>0
+                        ablation=Site_Weather.Temperature(day,1).*ks;
+                    elseif Site_Weather.Temperature(day,1)>0 && site_balance<=0
+                        ablation=Site_Weather.Temperature(day,1).*ki;
+                    else
+                        ablation=0;
+                    end
+                    site_balance=site_balance+ablation;
+                   if Site_Weather.Date(day)==mass_maximum_date_numbers(site)
+                       insitu_data.bw(site)=site_balance;
+                   elseif Site_Weather.Date(day)==mass_minimum_date_numbers(site)
+                       insitu_data.ba(site)=site_balance;
+                   end
+                end
+                insitu_data.spring_date(site)=mass_maximum_date_numbers(site);
+                insitu_data.fall_date(site)=mass_minimum_date_numbers(site);
+                insitu_data.bw_fill(site) = 2;
+                insitu_data.ba_fill(site) = 2;
+            end
+        end 
+    end
+    n=0;   
+    for site=1:height(insitu_data)        
+        index=find(insitu_data.elevation==insitu_data.elevation(site));
+        if length(index)>1
+            n=n+0.01;
+            insitu_data.elevation(site)=insitu_data.elevation(site)+n;
+        end
+    end
+
+            
+    Filled_Glaciological_data=[Filled_Glaciological_data;insitu_data];
+    end
+end
+end
+

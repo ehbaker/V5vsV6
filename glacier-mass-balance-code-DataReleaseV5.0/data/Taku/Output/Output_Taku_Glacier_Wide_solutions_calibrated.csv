@@ -1,0 +1,76 @@
+Year,Bw_mwe,Bs_mwe,Ba_mwe,ELA_m,Bw_Date,Ba_Date,bw_gradient_mwe_km,bs_gradient_mwe_km,ba_gradient_mwe_km,Lapse_Rate,Time_System,Integration_Method,Integration_Surface,Source,Calibration
+1946,NaN,NaN,0.13,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1947,NaN,NaN,0.53,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1948,NaN,NaN,0.68,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1949,NaN,NaN,1.09,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.16
+1950,NaN,NaN,-0.01,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1951,NaN,NaN,-0.17,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1952,NaN,NaN,0.33,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1953,NaN,NaN,0.02,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1954,NaN,NaN,0.1,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1955,NaN,NaN,1.14,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1956,NaN,NaN,0.04,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1957,NaN,NaN,0.13,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1958,NaN,NaN,0.38,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1959,NaN,NaN,0.52,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1960,NaN,NaN,0.33,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1961,NaN,NaN,0.65,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1962,NaN,NaN,0.56,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1963,NaN,NaN,0.74,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1964,NaN,NaN,1.3,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1965,NaN,NaN,0.96,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1966,NaN,NaN,0.25,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1967,NaN,NaN,0.42,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1968,NaN,NaN,0.63,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1969,NaN,NaN,1.34,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1970,NaN,NaN,0.93,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1971,NaN,NaN,0.8,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1972,NaN,NaN,0.59,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1973,NaN,NaN,0.69,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1974,NaN,NaN,0.75,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1975,NaN,NaN,1.02,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1976,NaN,NaN,0.83,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1977,NaN,NaN,0.64,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1978,NaN,NaN,0.48,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1979,NaN,NaN,0.31,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1980,NaN,NaN,0.71,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1981,NaN,NaN,0.29,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1982,NaN,NaN,0.32,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1983,NaN,NaN,-0.25,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1984,NaN,NaN,0.81,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1985,NaN,NaN,1.57,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1986,NaN,NaN,1.37,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1987,NaN,NaN,0.56,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1988,NaN,NaN,0.77,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1989,NaN,NaN,-0.64,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1990,NaN,NaN,-0.28,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1991,NaN,NaN,0.55,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1992,NaN,NaN,0.34,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1993,NaN,NaN,0.13,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1994,NaN,NaN,0.26,NaN,mm/dd/yyyy,mm/dd/yyyy,NaN,NaN,NaN,-5,nan,nan,nan,WGMS,0.17
+1995,2.2,-2.62,-0.42,1217.38712711883,04/18/1995,10/06/1995,3.52         0.1,NaN,11.56            3,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.02
+1996,1.84,-2.05,-0.21,1118.98035383766,04/30/1996,09/20/1996,3.1       -0.53,NaN,10.03         2.08,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.02
+1997,2.2,-2.91,-0.71,1277.39768847654,04/29/1997,10/03/1997,3.36        0.11,NaN,10.95         2.73,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.03
+1998,2.03,-2.26,-0.23,1146.30784361162,04/26/1998,09/28/1998,2.99       -0.41,NaN,9.85        1.57,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.02
+1999,2.37,-1.96,0.41,1055.93854671672,05/30/1999,09/28/1999,4.01        1.42,NaN,10.22         3.35,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.02
+2000,2.69,-1.81,0.88,948.465289664848,04/30/2000,09/28/2000,4.63        0.24,NaN,11.6         2.29,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
+2001,2.6,-2.23,0.37,964.22607820151,05/09/2001,09/28/2001,4.99        1.14,NaN,12.3         2.63,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
+2002,1.92,-2.13,-0.21,1059.98657533054,05/13/2002,09/30/2002,2.78        0.54,NaN,9.73         2.6,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
+2003,1.15,-2.56,-1.41,1393.60623570543,04/16/2003,10/12/2003,3.1         0.6,NaN,10.36          4.2,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.4
+2004,2.29,-3.06,-0.77,1223.58822716697,04/25/2004,10/05/2004,3.21        0.75,NaN,11.09         3.82,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
+2005,2.63,-2.89,-0.26,1077.59816614899,04/20/2005,09/26/2005,3.92        0.55,NaN,12.23         2.45,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
+2006,2.39,-2.16,0.23,1015.0199825407,05/16/2006,09/23/2006,4.69        1.49,NaN,11.94         3.16,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
+2007,2.21,-2.19,0.02,1015.25437974243,05/17/2007,09/15/2007,3.88        0.97,NaN,9.96        2.28,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
+2008,2.29,-1.73,0.56,1013.38445518303,05/16/2008,10/02/2008,4.34        0.62,NaN,10.35         3.05,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
+2009,2.22,-2.39,-0.17,1015.21003850048,04/21/2009,09/21/2009,3.08       -0.54,NaN,9.84        1.54,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
+2010,2.22,-2.43,-0.21,1077.8966018283,04/22/2010,10/02/2010,3.56        0.07,NaN,10.72         2.28,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.4
+2011,1.77,-2.05,-0.28,1084.57308946286,05/12/2011,09/27/2011,4.06        0.19,NaN,11.16         2.47,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
+2012,2.87,-1.74,1.13,983.684470056362,05/14/2012,10/11/2012,4.69       -0.62,NaN,10.4         1.92,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
+2013,2.05,-2.73,-0.68,1148.40877665841,05/04/2013,10/02/2013,2.39       -0.12,NaN,9.51        2.29,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
+2014,2,-2.62,-0.62,1186.87700841715,04/18/2014,09/29/2014,2.58       -0.12,NaN,8.92        2.29,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
+2015,2.02,-2.98,-0.96,1217.42557152282,05/01/2015,10/12/2015,3.84        0.72,NaN,11.89          3.1,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
+2016,2.25,-3.11,-0.86,1167.88239403219,05/07/2016,10/14/2016,4.15        0.39,NaN,12.37         2.17,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
+2017,1.97,-2.49,-0.52,1174.13342569573,05/08/2017,10/01/2017,2.71        0.24,NaN,9.18        1.61,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
+2018,1.7,-3.06,-1.36,1307.97782481966,05/05/2018,10/04/2018,2.98        0.93,NaN,10.25         3.03,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.4
+2019,1.46,-3.73,-2.27,1527.83232070597,05/07/2019,10/05/2019,3.42        1.21,NaN,10.41         5.03,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
+2020,2.46,-2.64,-0.18,1086.03366706089,04/30/2020,10/16/2020,3.93        0.86,NaN,11.98          3.1,-5,Fixed_Date_Stratigraphic,Piecewise_Gradient_Method,Conventional,Reanalyzed,-0.39
